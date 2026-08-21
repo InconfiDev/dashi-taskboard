@@ -61,6 +61,11 @@ const EXTRA_TRUSTED_HOSTS = new Set(
     .map((entry) => entry.trim().toLowerCase())
     .filter(Boolean),
 );
+const DEFAULT_ACTOR_ID = process.env.CODEX_TASKBOARD_DEFAULT_USER_ID ?? "local-user";
+const DEFAULT_ACTOR_NAME = process.env.CODEX_TASKBOARD_DEFAULT_USER_NAME ?? "本地用户";
+if (!/^[a-z0-9](?:[a-z0-9._-]*[a-z0-9])?$/.test(DEFAULT_ACTOR_ID)) {
+  throw new Error("CODEX_TASKBOARD_DEFAULT_USER_ID must match ^[a-z0-9](?:[a-z0-9._-]*[a-z0-9])?$");
+}
 const CODEX_AGENT_ACTOR = {
   type: "agent",
   id: "codex-agent",
@@ -594,7 +599,7 @@ function actorFromRequest(request) {
   const rawName = requestHeader(request, "x-taskboard-user-name");
   const rawAvatarUrl = requestHeader(request, "x-taskboard-user-avatar");
   if (rawId === undefined && rawName === undefined && rawAvatarUrl === undefined) {
-    return { type: "user", id: "local-user", name: "本地用户", avatarUrl: null };
+    return { type: "user", id: DEFAULT_ACTOR_ID, name: DEFAULT_ACTOR_NAME, avatarUrl: null };
   }
   if (rawId === undefined || rawName === undefined) {
     throw new ApiError(400, "INVALID_ACTOR", "User identity requires both an ID and name");
