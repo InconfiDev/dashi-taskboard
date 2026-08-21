@@ -2413,6 +2413,7 @@ export function createTaskboardServer(options = {}) {
         return sendJson(response, 200, {
           manageTaskboardSkillPath: resolved.skillPath,
           capabilities: { localAiChat: isLoopbackAddress(request.socket.remoteAddress) },
+          defaultUser: { id: DEFAULT_ACTOR_ID, name: DEFAULT_ACTOR_NAME },
           ...(capabilityCloudConfig?.remoteUrl
             ? {
               mode: "cloud",
