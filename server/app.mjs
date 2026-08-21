@@ -54,6 +54,12 @@ const INLINE_ATTACHMENT_TYPES = new Set([
 ]);
 const PROJECT_ID_PATTERN = /^[a-z0-9](?:[a-z0-9-]{0,62}[a-z0-9])?$/;
 const TRUSTED_EMBED_ORIGINS = new Set(["app://-"]);
+const EXTRA_TRUSTED_HOSTS = new Set(
+  (process.env.CODEX_TASKBOARD_TRUSTED_HOSTS ?? "")
+    .split(",")
+    .map((entry) => entry.trim().toLowerCase())
+    .filter(Boolean),
+);
 const CODEX_AGENT_ACTOR = {
   type: "agent",
   id: "codex-agent",
@@ -144,6 +150,7 @@ function normalizeHostname(hostname) {
 
 function isTrustedNetworkHost(hostname) {
   const host = normalizeHostname(hostname);
+  if (EXTRA_TRUSTED_HOSTS.has(host)) return true;
   if (host === "localhost" || host === "::1" || host.endsWith(".local")) return true;
   if (isIP(host) === 4) {
     const octets = host.split(".").map(Number);
@@ -151,7 +158,8 @@ function isTrustedNetworkHost(hostname) {
       || octets[0] === 10
       || (octets[0] === 172 && octets[1] >= 16 && octets[1] <= 31)
       || (octets[0] === 192 && octets[1] === 168)
-      || (octets[0] === 169 && octets[1] === 254);
+      || (octets[0] === 169 && octets[1] === 254)
+      || (octets[0] === 100 && octets[1] >= 64 && octets[1] <= 127);
   }
   if (isIP(host) === 6) {
     return host.startsWith("fc")
