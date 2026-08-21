@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.data/
+.tmp/
+.wrangler/
+.dev.vars*
+.env*
+src-tauri/
+docs/
+.git/
+.github/
+*.log
