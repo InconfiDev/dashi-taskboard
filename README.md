@@ -157,6 +157,8 @@ To use a different UI origin, set `window.__CODEX_TASKBOARD_URL__` before the us
 | `CODEX_TASKBOARD_DATA_DIR` | `.data` | SQLite data directory |
 | `CODEX_TASKBOARD_URL` | `http://127.0.0.1:47823` | CLI API origin |
 | `CODEX_TASKBOARD_TRUSTED_HOSTS` | (empty) | Comma-separated hostnames allowed past the local/private network guard |
+| `CODEX_TASKBOARD_DEFAULT_USER_ID` | `local-user` | Identity ID used when no X-Taskboard-User-* headers are sent |
+| `CODEX_TASKBOARD_DEFAULT_USER_NAME` | `本地用户` | Display name used when no X-Taskboard-User-* headers are sent |
 
 `npm start` prints both the local URL and the available LAN URLs. Teammates on the same trusted network can open one of those LAN URLs and use the same taskboard service. Task, comment, and attachment changes are broadcast to every open client through server-sent events; reconnecting clients perform a full refresh so changes made while disconnected are not missed. A teammate using `taskctl` can point it at the shared service with `CODEX_TASKBOARD_URL=http://<host-ip>:47823`.
 
