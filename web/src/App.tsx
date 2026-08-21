@@ -906,10 +906,19 @@ export function App() {
   useLayoutEffect(() => {
     if (selectedProject) rememberProjectOpen(selectedProject.id);
   }, [rememberProjectOpen, selectedProject]);
-  const currentUser = hostContext?.user ?? {
-    ...DEFAULT_USER_ACTOR,
-    name: text("本地用户", "Local user"),
-  };
+  const currentUser = hostContext?.user ?? (
+    taskboardMetadata?.defaultUser && taskboardMetadata.defaultUser.id !== DEFAULT_USER_ACTOR.id
+      ? {
+        type: "user" as const,
+        id: taskboardMetadata.defaultUser.id,
+        name: taskboardMetadata.defaultUser.name,
+        avatarUrl: null,
+      }
+      : { ...DEFAULT_USER_ACTOR, name: text("本地用户", "Local user") }
+  );
+  useEffect(() => {
+    setCurrentUserActor(currentUser);
+  }, [currentUser.id, currentUser.name, currentUser.avatarUrl]);
   const selectedDeviceWorkspacePath = selectedProjectId === GLOBAL_PROJECT_ID || isAllProjects
     ? undefined
     : deviceWorkspacePaths[selectedProjectId];

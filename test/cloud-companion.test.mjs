@@ -631,6 +631,7 @@ test("configured server proxies business APIs without touching local rows and ad
     const metadata = await fetch(`${baseUrl}/api/meta`).then((response) => response.json());
     assert.deepEqual(metadata, {
       capabilities: { localAiChat: true },
+      defaultUser: { id: "local-user", name: "本地用户" },
       mode: "cloud",
       realtime: { transport: "poll", intervalMs: 2000 },
       localCapabilities: { available: true },

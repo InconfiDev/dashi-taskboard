@@ -47,6 +47,7 @@ export interface TaskboardMetadata {
   localCapabilities?: {
     available: boolean;
   };
+  defaultUser?: { id: string; name: string };
 }
 
 export interface TaskboardCapabilities {
