@@ -1759,7 +1759,10 @@ export function App() {
         listDeviceWorkspaces(signal),
       ]);
       if (requestId !== projectsRequestRef.current) return;
-      const nextJiraConnection = await getJiraConnection(signal);
+      const nextJiraConnection = await getJiraConnection(signal).catch((error) => {
+        if ((error as Error).name === "AbortError") throw error;
+        return null;
+      });
       if (requestId !== projectsRequestRef.current) return;
       setTaskboardMetadata((current) => (
         current
