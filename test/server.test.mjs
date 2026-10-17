@@ -553,6 +553,7 @@ test("trusted HTTPS origins do not inherit device-local capabilities from tunnel
   assert.equal(metadata.response.status, 200);
   assert.deepEqual(metadata.body, {
     capabilities: { localAiChat: false },
+    defaultUser: { id: "local-user", name: "本地用户" },
     mode: "cloud",
     realtime: {
       transport: "websocket",
@@ -587,6 +588,7 @@ test("trusted HTTPS origins do not inherit device-local capabilities from tunnel
   assert.deepEqual(localMetadata.body, {
     manageTaskboardSkillPath: skillPath,
     capabilities: { localAiChat: true },
+    defaultUser: { id: "local-user", name: "本地用户" },
     mode: "cloud",
     realtime: {
       transport: "websocket",
