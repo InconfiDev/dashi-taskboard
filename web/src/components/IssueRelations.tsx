@@ -13,9 +13,13 @@ import type {
 } from "../types";
 import { useTaskboardI18n } from "../i18n";
 import { ActorAvatar } from "./ActorAvatar";
-import { StatusIcon } from "./BoardColumn";
 import { LinearIcon } from "./LinearIcon";
-import { TaskboardIcon } from "./TaskboardIcon";
+import {
+  BlockingRelationIcon,
+  PlusIcon,
+  RelationIcon,
+  StatusIcon,
+} from "./SemanticIcons";
 
 export interface RelationMutationResult {
   task: Task;
@@ -130,7 +134,7 @@ export function IssuePickerContent({
               onMouseEnter={() => setActiveIndex(index)}
               onClick={() => void choose(candidate)}
             >
-              <StatusIcon status={candidate.status} />
+              <StatusIcon status={candidate.status} size={14} />
               <span className="issue-relation-option-id">{candidate.externalKey ?? candidate.identifier}</span>
               <span className="issue-relation-option-title">{candidate.title}</span>
               {selectedIds && (
@@ -162,6 +166,10 @@ interface RelationActions {
     type: IssueRelationType,
     relatedTaskId: string,
   ) => Promise<RelationMutationResult>;
+}
+
+interface IssueSubIssuesProps extends RelationActions {
+  onCreateChild: () => void;
 }
 
 export function IssuePicker({
@@ -197,7 +205,7 @@ export function IssuePicker({
         aria-expanded={open}
         onClick={() => setOpen((value) => !value)}
       >
-        <LinearIcon name="plus" />
+        <PlusIcon color="currentColor" size={13} />
         <span>{label}</span>
       </button>
       {open && (
@@ -248,7 +256,7 @@ function IssueRelationRow({
   return (
     <div className="issue-relation-row">
       <button className="issue-relation-target" type="button" onClick={onOpen}>
-        <StatusIcon status={issue.status} />
+        <StatusIcon status={issue.status} size={14} />
         <span className="issue-relation-id">{issue.externalKey ?? issue.identifier}</span>
         <span className="issue-relation-title">{issue.title}</span>
         {showAssignee && <ActorAvatar actor={issue.assignee} className="issue-relation-assignee" />}
@@ -330,7 +338,8 @@ export function IssueSubIssues({
   onOpenTask,
   onAddRelation,
   onRemoveRelation,
-}: RelationActions) {
+  onCreateChild,
+}: IssueSubIssuesProps) {
   const { text } = useTaskboardI18n();
   const [savingId, setSavingId] = useState<string | null>(null);
   const subIssues = task.relations.subIssues;
@@ -366,19 +375,30 @@ export function IssueSubIssues({
             </span>
           )}
         </div>
-        <IssuePicker
-          label={text("添加子议题", "Add sub-issue")}
-          candidates={candidates}
-          disabled={savingId !== null}
-          onSelect={async (candidate) => {
-            setSavingId(candidate.id);
-            try {
-              await onAddRelation(candidate, "parent", task.id);
-            } finally {
-              setSavingId(null);
-            }
-          }}
-        />
+        <div className="issue-sub-issue-actions">
+          <button
+            className="issue-relation-add issue-sub-issue-create"
+            type="button"
+            disabled={savingId !== null}
+            onClick={onCreateChild}
+          >
+            <PlusIcon color="currentColor" size={13} />
+            <span>{text("新建子议题", "New sub-issue")}</span>
+          </button>
+          <IssuePicker
+            label={text("添加子议题", "Add sub-issue")}
+            candidates={candidates}
+            disabled={savingId !== null}
+            onSelect={async (candidate) => {
+              setSavingId(candidate.id);
+              try {
+                await onAddRelation(candidate, "parent", task.id);
+              } finally {
+                setSavingId(null);
+              }
+            }}
+          />
+        </div>
       </header>
       {subIssues.length > 0 && (
         <div className="issue-sub-issue-list">
@@ -440,9 +460,9 @@ export function IssueRelationSidebar({
             <header>
               <span>
                 {group.type === "related" ? (
-                  <LinearIcon name="link" />
+                  <RelationIcon color="currentColor" size={14} />
                 ) : (
-                  <TaskboardIcon name={group.type === "blocked_by" ? "relationBlockedBy" : "relationBlocks"} />
+                  <BlockingRelationIcon type={group.type} color="currentColor" />
                 )}
                 {label}
               </span>
