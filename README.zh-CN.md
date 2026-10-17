@@ -115,6 +115,32 @@ npm run app:build
 
 本地构建使用 ad-hoc 代码签名进行直接验证。公开的 macOS 下载仍需要 Developer ID 签名和 Apple 公证。
 
+### Linux App：Ubuntu 24.04 x64 软件包
+
+Linux 桌面版第一版仅支持 Ubuntu 24.04 LTS x64。请先安装官方 ChatGPT 桌面版 `.deb`，并确认运行 `chatgpt` 可以打开它。然后从 [GitHub Releases](https://github.com/chuspeeism/dashi-taskboard/releases/latest) 下载 Codex Taskboard `.deb` 或 `.AppImage`。请将以下命令中的 `<file>` 替换为下载的文件名。
+
+安装 `.deb` 软件包：
+
+```bash
+sudo apt install ./<file>.deb
+```
+
+或者运行 AppImage：
+
+```bash
+chmod +x ./<file>.AppImage
+./<file>.AppImage
+```
+
+如需在 Ubuntu 24.04 x64 上构建这两种软件包，请运行：
+
+```bash
+npm ci
+npm run app:build:linux:x64
+```
+
+第一版不支持 ARM64、Fedora、RPM 软件包或其他 Linux 发行版。
+
 ### Windows App：托盘启动器与内置 Taskboard
 
 先从 Microsoft Store 安装官方 Codex App。在 Windows x64 上运行以下命令构建当前用户级 NSIS 安装包：
@@ -137,6 +163,10 @@ npm run codex:inject -- --port 9229 --open
 ```
 
 该命令也会保持驻留，因此服务退出后，注入的标签页可以重新启动 Taskboard。使用 `Ctrl-C` 停止该命令。
+
+Windows 上如果自行启动的 Codex 没有任务面板，通常是该实例没有 CDP 调试端口。仓库在
+[`tools/windows/`](tools/windows/README.md) 下提供只读面板诊断脚本，
+以及托管窗口不会重新激活这一问题的说明。
 
 该脚本会在 Codex 侧边栏添加 Taskboard 入口，并在 Codex 的整个主工作区渲染 iframe，包括上下文标题栏区域，因此 Taskboard 自己的页眉不会留下空白条。这个完整的矩形页眉位于 Electron 可拖动层之上，并标记为 `no-drag`；由于 Taskboard 活动时会隐藏原生上下文操作，它自己的操作可以使用正常的边缘内边距，不会产生人为的右侧空隙。原生侧边栏保持挂载，此前页面的选中状态和上下文页眉会暂时隐藏；选择另一个 Codex 页面会恢复它们。
 
